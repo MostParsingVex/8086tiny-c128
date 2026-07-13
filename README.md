@@ -1,10 +1,53 @@
-8086tiny
-========
+8086tiny-c128
+=============
 
-8086tiny is a completely free (MIT License) open source PC XT-compatible emulator/virtual machine written in C. It is, we believe, the smallest of its kind (the fully-commented source is under 25K). Despite its size, 8086tiny provides a highly accurate 8086 CPU emulation, together with support for PC peripherals including XT-style keyboard, floppy/hard disk, clock, audio, and Hercules/CGA graphics. 8086tiny is powerful enough to run software like AutoCAD, Windows 3.0, and legacy PC games: the 8086tiny distribution includes Alley Cat, the author's favorite PC game of all time.
+![Screenshot of C128 booting FreeDOS](images/vice-screen-2026071221383138.png)
 
-8086tiny is highly portable and runs on practically any little endian machine, from simple 32-bit MCUs upwards. 8086tiny has successfully been deployed on 32-bit/64-bit Intel machines (Windows, Mac OS X and Linux), Nexus 4/ARM (Android), iPad 3 and iPhone 5S (iOS), and Raspberry Pi (Linux).
+8086tiny-c128 is a port of [Adrian Cable's 8086tiny](https://github.com/adriancable/8086tiny) to the Commodore 128. This is currently a work in progress and
+my code changes are still a disgusting mess.
+While the current version should work on native hardware, it is currently most useful in an emulator
+such as VICE in "warp" mode.
 
-The philosophy of 8086tiny is to keep the code base as small as possible, and through the open source license encourage individual developers to tune and extend it as per their specific requirements, adding support, for example, for more complex instruction sets (e.g. Pentium) or peripherals (e.g. mouse). Forking this repository is highly encouraged!
+If your business needs (!!) require a faster x86 emulation solution on your 
+8 bit Commodore computer, consider [the C64 port of y86](https://gitlab.com/seapeaemm/y86).
 
-Any questions, comments or suggestions are very welcome in our forum at 8086tiny.freeforums.net.
+## Requirements
+* Real or emulated Commodore 128
+* 4 MB Ram Expansion Unit or 4 MB of SuperCPU RAM
+* Hard drive or solid state drive with at least 2 MB of space (mostly for 1.44 MB floppy boot image)
+* 80 column display
+* A UNIX-like build environment with make
+* llvm-mos SDK v22.5.0 or higher
+
+### Things that work
+* FreeDOS from 2012 boots
+* Simple command line applications that only use text mode and don't make too many crazy demands on
+cursor positioning should be usable.
+
+### Things that don't work
+* real time clock
+* many keys on the keyboard (e.g. CTRL-ALT-DELETE doesn't work)
+* hard drive
+* graphics modes
+* characters such as underscores and curly braces
+* speaker or other audio device
+* 1571 and 1581 and FD2000/4000 MFM disk support
+* mouse
+* lots of other things (welcome to open an issue if you don't believe it is mentioned)
+
+### To build
+
+Currently there are several Makefiles to target several platforms
+
+* To build for a UNIX-like environment, just type `make`
+* To build for a Commodore 64 with 4 MB REU, type `make -f Makefile.c64`
+* To build for a Commodore 64 with a SuperCPU and 4 MB of SuperCPU RAM, type `make -f Makefile.scpu64`
+* To build for a Commodore 128 with 4 MB REU, type `make -f Makefile.c128`
+* To build for a Commodore 128 with a SuperCPU128 and 4 MB of SuperCPU RAM, type `make -f Makefile.scpu128`
+
+### To run
+
+For UNIX-like environments, just type `./runme` as in the original version of 8086tiny.
+
+For the C64/128, first type `LOAD"LOADRAM",8` followed by `RUN` to load the bios (`bios`) and boot disk 
+image (`fd.img`) into RAM. To start the emulator, type `LOAD"8086TINY",8` followed by `RUN`.

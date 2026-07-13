@@ -1,0 +1,13 @@
+CC=~/llvm-mos/bin/mos-c64-clang
+CFLAGS=-Oz -flto -fnonreentrant -Wall -DTINY -DNO_GRAPHICS -DC64
+
+all: 8086tiny loadram
+
+8086tiny: 8086tiny.c reu.c
+	$(CC) 8086tiny.c reu.c -o 8086tiny $(CFLAGS)
+
+loadram: loadram.c reu.c
+	$(CC) loadram.c reu.c -o loadram $(CFLAGS)
+
+clean:
+	rm 8086tiny loadram
