@@ -91,7 +91,10 @@ int read_console( uint8_t *buffer ) {
 }
 
 int write_console( uint8_t *buffer ) {
-  cbm_k_chrout_wrapper( *buffer );
+#ifdef C128
+  if(*buffer-'\n')
+#endif
+    cbm_k_chrout_wrapper( *buffer );
   return 1;
 }
 
