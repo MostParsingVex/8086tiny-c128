@@ -111,14 +111,40 @@ void write_ram8(uint32_t addr, volatile uint8_t value) {
 
 // reads from 0xffff will have incorrect high byte
 uint16_t read_ram16( uint32_t addr ) {
-  return read_ram8( addr ) | (uint16_t)read_ram8( addr + 1 ) << 8;
+  volatile uint16_t temp;
+  uint16_t ptr = (uint16_t)&temp;
+
+#ifdef C128
+  *VIC_2MHZ = 252;
+#endif
+  *REU_C64ADR = ptr;
+  *REU_CONTROL = 0;
+  *REU_ADDRLO = addr;
+  *REU_ADDRHI = addr >> 16;
+  *REU_XFERLEN = 2;
+  *REU_CMD = 0x91;
+#ifdef C128
+  *VIC_2MHZ = 253;
+#endif
+  return temp;
 }
 
 // write to 0xffff will have incorrect high byte,
 // but that appears to be consistent with tht the 80186 does
 void write_ram16( uint32_t addr, uint16_t val ) {
-  write_ram8( addr, val );
-  write_ram8( addr + 1, val >> 8 );
+  uint16_t ptr = (uint16_t)&val;
+#ifdef C128
+  *VIC_2MHZ = 252;
+#endif
+  *REU_C64ADR = ptr;
+  *REU_CONTROL = 0;
+  *REU_ADDRLO = addr;
+  *REU_ADDRHI = addr >> 16;
+  *REU_XFERLEN = 2;
+  *REU_CMD = 0x90;
+#ifdef C128
+  *VIC_2MHZ = 253;
+#endif
 }
 
 uint8_t read_io_ports8( uint16_t addr ) {
@@ -130,12 +156,11 @@ void write_io_ports8( uint16_t addr, uint8_t val ) {
 }
 
 uint16_t read_io_ports16( uint16_t addr ) {
-  return read_io_ports8(addr) | (uint16_t)read_io_ports8(addr+1) << 8;
+  return read_ram16(IO_START + addr);
 }
 
 void write_io_ports16( uint16_t addr, uint16_t val ) {
-  write_io_ports8(addr, val);
-  write_io_ports8(addr+1, val >> 8);
+  write_ram16( IO_START + addr, val );
 }
 
 uint8_t read_regs8( uint32_t addr ) {
@@ -178,7 +203,10 @@ int read_console( uint8_t *buffer ) {
 }
 
 int write_console( uint8_t *buffer ) {
-  if(*buffer-'\n')cbm_k_chrout_wrapper( *buffer );
+#ifdef C128
+  if(*buffer-'\n')
+#endif
+    cbm_k_chrout_wrapper( *buffer );
   return 1;
 }
 
