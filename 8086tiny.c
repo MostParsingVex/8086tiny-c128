@@ -573,7 +573,7 @@ if(inst_counter==973875){
 						set_CF(op_result > op_dest)
 					;break; case 8: // MOV
 						//(i_w ? op_dest = *(unsigned short*)&mem[op_to_addr], op_result = *(unsigned short*)&mem[op_to_addr] = (op_source = *(unsigned short*)&mem[op_from_addr]) : (op_dest = mem[op_to_addr], op_result = mem[op_to_addr] = (op_source = *(unsigned char*)&mem[op_from_addr])));
-                                                (i_w ? op_dest = read_ram16(op_to_addr), write_ram16(op_to_addr, op_source = read_ram16(op_from_addr)), op_source = read_ram16(op_to_addr) : (op_dest = read_ram8(op_to_addr), write_ram8(op_to_addr, op_source = read_ram8(op_from_addr)), op_source = read_ram8(op_to_addr)));
+                                                (i_w ? op_dest = read_ram16(op_to_addr), write_ram16(op_to_addr, op_source = read_ram16(op_from_addr)), op_result = read_ram16(op_to_addr) : (op_dest = read_ram8(op_to_addr), write_ram8(op_to_addr, op_source = read_ram8(op_from_addr)), op_result = read_ram8(op_to_addr)));
 				}
 			;break; case 10: // MOV sreg, r/m | POP r/m | LEA reg, r/m
 				if (!i_w) // MOV
