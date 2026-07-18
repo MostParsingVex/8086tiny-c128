@@ -109,7 +109,7 @@ int write_disk( int whichdisk, uint32_t addr, uint8_t val ) {
 }
 
 void getrtc(){
-#if 0
+#if 1
   time(&clock_buf);
   ftime(&ms_clock);
   {
@@ -119,6 +119,12 @@ void getrtc(){
     }
   }
   write_ram16(16 * read_regs16(REG_ES) + (unsigned short)( 36+ read_regs16( REG_BX)), ms_clock.millitm );
+#if 0
+for(int i = 0;i<40;i++)
+printf("%02x ", read_ram8( 16 * read_regs16(REG_ES) + (unsigned short)( read_regs16( REG_BX)) + i));
+puts("");
+exit(0);
+#endif
 #endif
 }
 
