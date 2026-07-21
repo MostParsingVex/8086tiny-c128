@@ -13,7 +13,7 @@ If your business needs (!!) require a faster x86 emulation solution on your
 
 ## Requirements
 * Real or emulated Commodore 128
-* 4 MB Ram Expansion Unit or 4 MB of SuperCPU RAM
+* 4 MB Ram Expansion Unit or 4 MB of SuperCPU RAM or 4 MB geoRAM cartridge
 * Hard drive or solid state drive with at least 2 MB of space (mostly for 1.44 MB floppy boot image)
 * 80 column display
 * A UNIX-like build environment with make
@@ -42,8 +42,10 @@ Currently there are several Makefiles to target several platforms
 * To build for a UNIX-like environment, just type `make`
 * To build for a Commodore 64 with 4 MB REU, type `make -f Makefile.c64`
 * To build for a Commodore 64 with a SuperCPU and 4 MB of SuperCPU RAM, type `make -f Makefile.scpu64`
+* To build for a Commodore 64 with 4 MB geoRAM cartridge, type `make -f Makefile.c64georam`
 * To build for a Commodore 128 with 4 MB REU, type `make -f Makefile.c128`
 * To build for a Commodore 128 with a SuperCPU128 and 4 MB of SuperCPU RAM, type `make -f Makefile.scpu128`
+* To build for a Commodore 128 with 4 MB geoRAM cartridge, type `make -f Makefile.c128georam`
 
 ### To run
 
