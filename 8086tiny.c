@@ -78,8 +78,6 @@ int write_console( uint8_t *buffer );
 #define FLAGS_UPDATE_AO_ARITH 2
 #define FLAGS_UPDATE_OC_LOGIC 4
 
-# 90 "8086tiny.c"
-
 // Helper macros
 
 // Decode mod, r_m and reg fields in instruction
@@ -99,8 +97,6 @@ int write_console( uint8_t *buffer );
 
 
 // [I]MUL/[I]DIV/DAA/DAS/ADC/SBB helpers
-
-# 120 "8086tiny.c"
 
 // Execute arithmetic/logic operations in emulator memory/registers
 
