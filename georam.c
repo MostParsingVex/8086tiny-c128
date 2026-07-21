@@ -19,14 +19,31 @@ void write_ram8( uint32_t addr, volatile uint8_t data ) {
 
 // reads from 0xffff will have incorrect high byte
 uint16_t read_ram16( uint32_t addr ) {
-  return read_ram8( addr ) | (uint16_t)read_ram8( addr + 1 ) << 8;
+  *(volatile uint8_t*)0xdfff = addr >> 14;
+  *(volatile uint8_t*)0xdffe = addr >> 8 & 0x3f;
+  if( (addr & 255) < 255 ) {
+    return *(uint16_t*)&((volatile uint8_t*)0xde00)[addr & 0xff];
+  } else {
+    uint16_t temp = ((volatile uint8_t*)0xde00)[255];
+    *(volatile uint8_t*)0xdfff = addr + 256 >> 14;
+    *(volatile uint8_t*)0xdffe = addr + 256 >> 8 & 0x3f;
+    return temp | (uint16_t)((volatile uint8_t*)0xde00)[0] << 8;
+  }
 }
 
 // write to 0xffff will have incorrect high byte,
 // but that appears to be consistent with tht the 80186 does
 void write_ram16( uint32_t addr, uint16_t val ) {
-  write_ram8( addr, val );
-  write_ram8( addr + 1, val >> 8 );
+  *(volatile uint8_t*)0xdfff = addr >> 14;
+  *(volatile uint8_t*)0xdffe = addr >> 8 & 0x3f;
+  if( (addr & 255) < 255 ) {
+    *(uint16_t*)&((volatile uint8_t*)0xde00)[addr & 0xff] = val;
+  } else {
+    ((volatile uint8_t*)0xde00)[255] = val;
+    *(volatile uint8_t*)0xdfff = addr + 256 >> 14;
+    *(volatile uint8_t*)0xdffe = addr + 256 >> 8 & 0x3f;
+    ((volatile uint8_t*)0xde00)[0] = val >> 8;
+  }
 }
 
 uint8_t read_io_ports8( uint16_t addr ) {
@@ -38,12 +55,11 @@ void write_io_ports8( uint16_t addr, uint8_t val ) {
 }
 
 uint16_t read_io_ports16( uint16_t addr ) {
-  return read_io_ports8(addr) | (uint16_t)read_io_ports8(addr+1) << 8;
+  return read_ram16( IO_START + addr );
 }
 
 void write_io_ports16( uint16_t addr, uint16_t val ) {
-  write_io_ports8(addr, val);
-  write_io_ports8(addr+1, val >> 8);
+  write_ram16( IO_START + addr, val );
 }
 
 uint8_t read_regs8( uint32_t addr ) {
