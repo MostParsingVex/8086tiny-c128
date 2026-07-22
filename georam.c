@@ -25,8 +25,8 @@ uint16_t read_ram16( uint32_t addr ) {
     return *(uint16_t*)&((volatile uint8_t*)0xde00)[addr & 0xff];
   } else {
     uint16_t temp = ((volatile uint8_t*)0xde00)[255];
-    *(volatile uint8_t*)0xdfff = addr + 256 >> 14;
-    *(volatile uint8_t*)0xdffe = addr + 256 >> 8 & 0x3f;
+    *(volatile uint8_t*)0xdfff = (addr + 256) >> 14;
+    *(volatile uint8_t*)0xdffe = (addr + 256) >> 8 & 0x3f;
     return temp | (uint16_t)((volatile uint8_t*)0xde00)[0] << 8;
   }
 }
@@ -40,8 +40,8 @@ void write_ram16( uint32_t addr, uint16_t val ) {
     *(uint16_t*)&((volatile uint8_t*)0xde00)[addr & 0xff] = val;
   } else {
     ((volatile uint8_t*)0xde00)[255] = val;
-    *(volatile uint8_t*)0xdfff = addr + 256 >> 14;
-    *(volatile uint8_t*)0xdffe = addr + 256 >> 8 & 0x3f;
+    *(volatile uint8_t*)0xdfff = (addr + 256) >> 14;
+    *(volatile uint8_t*)0xdffe = (addr + 256) >> 8 & 0x3f;
     ((volatile uint8_t*)0xde00)[0] = val >> 8;
   }
 }

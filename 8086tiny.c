@@ -381,7 +381,7 @@ disk[0]=open("fd.img",32898);
 	// Instruction execution loop. Terminates if CS:IP = 0:0
 	//for (; opcode_stream = mem + 16 * regs16[REG_CS] + reg_ip, opcode_stream != mem;)
         //for( ; opcode_stream = mem + 16L * read_regs16(REG_CS) + reg_ip, opcode_stream != mem;)
-        for( ;opcode_stream = 16L * read_regs16(REG_CS) + reg_ip; )
+        for( ;; )
 	{
                 opcode_stream = 16L * read_regs16(REG_CS) + reg_ip;
 #if !defined(C64) && !defined(C128)
@@ -435,7 +435,7 @@ if(inst_counter==973875){
 				i_data1 = (int8_t)i_data1;
 
 			//scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16 * regs16[seg_override_en ? seg_override : bios_table_lookup[scratch2_uint + 3][i_rm]] + (unsigned short)(regs16[bios_table_lookup[scratch2_uint + 1][i_rm]] + bios_table_lookup[scratch2_uint + 2][i_rm] * i_data1+ regs16[bios_table_lookup[scratch2_uint][i_rm]]) : (REGS_BASE + (i_w ? 2 * i_rm : 2 * i_rm + i_rm / 4 & 7)), op_from_addr = (REGS_BASE + (i_w ? 2 * i_reg : 2 * i_reg + i_reg / 4 & 7)), i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint);
-                        scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16L * read_regs16(seg_override_en ? seg_override : read_bios_table_lookup(scratch2_uint + 3, i_rm)) + (unsigned short)(read_regs16(read_bios_table_lookup(scratch2_uint + 1, i_rm)) + read_bios_table_lookup(scratch2_uint + 2, i_rm) * i_data1+ read_regs16(read_bios_table_lookup(scratch2_uint, i_rm))) : (REGS_BASE + (i_w ? 2 * i_rm : 2 * i_rm + i_rm / 4 & 7)), op_from_addr = (REGS_BASE + (i_w ? 2 * i_reg : 2 * i_reg + i_reg / 4 & 7)), i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint);
+                        scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16L * read_regs16(seg_override_en ? seg_override : read_bios_table_lookup(scratch2_uint + 3, i_rm)) + (unsigned short)(read_regs16(read_bios_table_lookup(scratch2_uint + 1, i_rm)) + read_bios_table_lookup(scratch2_uint + 2, i_rm) * i_data1+ read_regs16(read_bios_table_lookup(scratch2_uint, i_rm))) : (REGS_BASE + (i_w ? 2 * i_rm : (2 * i_rm + i_rm / 4) & 7)), op_from_addr = (REGS_BASE + (i_w ? 2 * i_reg : (2 * i_reg + i_reg / 4) & 7)), i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint);
 		}
 
 		// Instruction execution unit
@@ -450,7 +450,7 @@ if(inst_counter==973875){
 			;break; case 1: // MOV reg, imm
 				i_w = !!(raw_opcode_id & 8);
 				//(i_w ? op_dest = *(unsigned short*)&mem[(REGS_BASE + (i_w ? 2 * i_reg4bit : 2 * i_reg4bit + i_reg4bit / 4 & 7))], op_result = *(unsigned short*)&mem[(REGS_BASE + (i_w ? 2 * i_reg4bit : 2 * i_reg4bit + i_reg4bit / 4 & 7))]  = (op_source = *(unsigned short*)& i_data0) : (op_dest = mem[(REGS_BASE + (i_w ? 2 * i_reg4bit : 2 * i_reg4bit + i_reg4bit / 4 & 7))], op_result = mem[(REGS_BASE + (i_w ? 2 * i_reg4bit : 2 * i_reg4bit + i_reg4bit / 4 & 7))]  = (op_source = *(unsigned char*)& i_data0)))
-                                (i_w ? op_dest = read_ram16(REGS_BASE + (2 * i_reg4bit)), write_ram16(REGS_BASE + (2 * i_reg4bit), op_result = op_source = *(unsigned short*)& i_data0) : (op_dest = read_ram8(REGS_BASE + (2 * i_reg4bit + i_reg4bit / 4 & 7)), write_ram8(REGS_BASE + (2 * i_reg4bit + i_reg4bit / 4 & 7), op_result = op_source = *(unsigned char*)& i_data0)))
+                                (i_w ? op_dest = read_ram16(REGS_BASE + (2 * i_reg4bit)), write_ram16(REGS_BASE + (2 * i_reg4bit), op_result = op_source = *(unsigned short*)& i_data0) : (op_dest = read_ram8(REGS_BASE + ((2 * i_reg4bit + i_reg4bit / 4) & 7)), write_ram8(REGS_BASE + ((2 * i_reg4bit + i_reg4bit / 4) & 7), op_result = op_source = *(unsigned char*)& i_data0)))
 			;break; case 3: // PUSH regs16
                                 {uint16_t sp;
 				//(i_w = 1, (i_w ? op_dest = *(unsigned short*)&mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])], op_result = *(unsigned short*)&mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])] = (op_source = *(unsigned short*)&regs16[i_reg4bit]) : (op_dest = mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])], op_result = mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])] = (op_source = *(unsigned char*)&regs16[i_reg4bit]))))
@@ -479,7 +479,7 @@ if(inst_counter==973875){
 				else if (i_reg != 6) // JMP|CALL
                                         {uint16_t sp;
 					//i_reg - 3 || (i_w = 1, (i_w ? op_dest = *(unsigned short*)&mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])], op_result = *(unsigned short*)&mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])] = (op_source = *(unsigned short*)&regs16[REG_CS]) : (op_dest = mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])], op_result = mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])] = (op_source = *(unsigned char*)&regs16[REG_CS])))), // CALL (far)
-                                        i_reg - 3 || (i_w = 1, sp = read_regs16(REG_SP)-1,(op_dest = read_ram16(16L * read_regs16(REG_SS) + sp), sp--, write_ram16(16L * read_regs16(REG_SS) + sp, op_result = op_source = read_regs16(REG_CS)) ), write_regs16(REG_SP, sp), 0), // CALL (far)
+                                        (void)(i_reg - 3 || (i_w = 1, sp = read_regs16(REG_SP)-1,(op_dest = read_ram16(16L * read_regs16(REG_SS) + sp), sp--, write_ram16(16L * read_regs16(REG_SS) + sp, op_result = op_source = read_regs16(REG_CS)) ), write_regs16(REG_SP, sp), 0)), // CALL (far)
 					//i_reg & 2 && (i_w = 1, (i_w ? op_dest = *(unsigned short*)&mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])], op_result = *(unsigned short*)&mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])] = (op_source = *(unsigned short*)&reg_ip + 2 + i_mod*(i_mod != 3) + 2*(!i_mod && i_rm == 6)) : (op_dest = mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])], op_result = mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])] = (op_source = *(unsigned char*)&reg_ip + 2 + i_mod*(i_mod != 3) + 2*(!i_mod && i_rm == 6))))), // CALL (near or far)
                                         i_reg & 2 && (i_w = 1, sp = read_regs16(REG_SP)-1,(op_dest = read_ram16(16L * read_regs16(REG_SS) + read_regs16(REG_SP)), sp--, write_ram16(16L * read_regs16(REG_SS) + sp, op_result = op_source = *(unsigned short*)&reg_ip + 2 + i_mod*(i_mod != 3) + 2*(!i_mod && i_rm == 6)) ), write_regs16(REG_SP, sp), 0), // CALL (near or far)
 					//i_reg & 1 && (regs16[REG_CS] = *(short*)&mem[op_from_addr + 2]), // JMP|CALL (far)
@@ -549,10 +549,10 @@ if(inst_counter==973875){
                                                 (i_w ? op_dest = read_ram16(op_to_addr), write_ram16(op_to_addr, op_dest | (op_source = read_ram16(op_from_addr))), op_result = read_ram16(op_to_addr) : (op_dest = read_ram8(op_to_addr), write_ram8(op_to_addr, op_dest | (op_source = read_ram8(op_from_addr))), op_result = read_ram8(op_to_addr)))
 					;break; case 2: // ADC
 						//(i_w ? op_dest = *(unsigned short*)&mem[op_to_addr], op_result = *(unsigned short*)&mem[op_to_addr] += regs8[FLAG_CF] + (op_source = *(unsigned short*)&mem[op_from_addr]) : (op_dest = mem[op_to_addr], op_result = mem[op_to_addr] += regs8[FLAG_CF] + (op_source = *(unsigned char*)&mem[op_from_addr]))), set_CF(regs8[FLAG_CF] && (op_result == op_dest) || (+ op_result < +(int)op_dest)), set_AF_OF_arith()
-                                                (i_w ? op_dest = read_ram16(op_to_addr), write_ram16( op_to_addr, op_dest + read_regs8(FLAG_CF) + (op_source = read_ram16(op_from_addr))), op_result = read_ram16( op_to_addr ) : (op_dest = read_ram8(op_to_addr), write_ram8( op_to_addr, op_dest + read_regs8(FLAG_CF) + (op_source = read_ram8(op_from_addr))), op_result = read_ram8( op_to_addr ) )), set_CF(read_regs8(FLAG_CF) && (op_result == op_dest) || (+ op_result < +(int32_t)op_dest)), set_AF_OF_arith()
+                                                (i_w ? op_dest = read_ram16(op_to_addr), write_ram16( op_to_addr, op_dest + read_regs8(FLAG_CF) + (op_source = read_ram16(op_from_addr))), op_result = read_ram16( op_to_addr ) : (op_dest = read_ram8(op_to_addr), write_ram8( op_to_addr, op_dest + read_regs8(FLAG_CF) + (op_source = read_ram8(op_from_addr))), op_result = read_ram8( op_to_addr ) )), set_CF((read_regs8(FLAG_CF) && op_result == op_dest) || (+ op_result < +(int32_t)op_dest)), set_AF_OF_arith()
 					;break; case 3: // SBB
 						//(i_w ? op_dest = *(unsigned short*)&mem[op_to_addr], op_result = *(unsigned short*)&mem[op_to_addr] -= regs8[FLAG_CF] + (op_source = *(unsigned short*)&mem[op_from_addr]) : (op_dest = mem[op_to_addr], op_result = mem[op_to_addr] -= regs8[FLAG_CF] + (op_source = *(unsigned char*)&mem[op_from_addr]))), set_CF(regs8[FLAG_CF] && (op_result == op_dest) || (- op_result < -(int)op_dest)), set_AF_OF_arith()
-                                                (i_w ? op_dest = read_ram16( op_to_addr ), write_ram16( op_to_addr,  op_dest - read_regs8(FLAG_CF) - (op_source = read_ram16( op_from_addr ))), op_result = read_ram16( op_to_addr ) : (op_dest = read_ram8( op_to_addr ), write_ram8( op_to_addr, op_dest - read_regs8(FLAG_CF) - (op_source = read_ram8( op_from_addr ))), op_result = read_ram8( op_to_addr ))), set_CF(read_regs8(FLAG_CF) && (op_result == op_dest) || (- op_result < -(int32_t)op_dest)), set_AF_OF_arith()
+                                                (i_w ? op_dest = read_ram16( op_to_addr ), write_ram16( op_to_addr,  op_dest - read_regs8(FLAG_CF) - (op_source = read_ram16( op_from_addr ))), op_result = read_ram16( op_to_addr ) : (op_dest = read_ram8( op_to_addr ), write_ram8( op_to_addr, op_dest - read_regs8(FLAG_CF) - (op_source = read_ram8( op_from_addr ))), op_result = read_ram8( op_to_addr ))), set_CF((read_regs8(FLAG_CF) && op_result == op_dest) || (- op_result < -(int32_t)op_dest)), set_AF_OF_arith()
 					;break; case 4: // AND
 						//(i_w ? op_dest = *(unsigned short*)&mem[op_to_addr], op_result = *(unsigned short*)&mem[op_to_addr] &= (op_source = *(unsigned short*)&mem[op_from_addr]) : (op_dest = mem[op_to_addr], op_result = mem[op_to_addr] &= (op_source = *(unsigned char*)&mem[op_from_addr])))
                                                 (i_w ? op_dest = read_ram16(op_to_addr), write_ram16( op_to_addr, op_dest & (op_source = read_ram16(op_from_addr))), op_dest = read_ram16( op_to_addr ) : (op_dest = read_ram8(op_to_addr), write_ram8( op_to_addr, op_dest & (op_source = read_ram8(op_from_addr))), op_result = read_ram8( op_to_addr )))
@@ -576,25 +576,25 @@ if(inst_counter==973875){
 					i_w = 1,
 					i_reg += 8,
 					//scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16 * regs16[seg_override_en ? seg_override : bios_table_lookup[scratch2_uint + 3][i_rm]] + (unsigned short)(regs16[bios_table_lookup[scratch2_uint + 1][i_rm]] + bios_table_lookup[scratch2_uint + 2][i_rm] * i_data1+ regs16[bios_table_lookup[scratch2_uint][i_rm]]) : (REGS_BASE + (i_w ? 2 * i_rm : 2 * i_rm + i_rm / 4 & 7)), op_from_addr = (REGS_BASE + (i_w ? 2 * i_reg : 2 * i_reg + i_reg / 4 & 7)), i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint),
-                                        scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16L * read_regs16(seg_override_en ? seg_override : read_bios_table_lookup(scratch2_uint + 3,i_rm)) + (unsigned short)(read_regs16(read_bios_table_lookup(scratch2_uint + 1,i_rm)) + read_bios_table_lookup(scratch2_uint + 2,i_rm) * i_data1+ read_regs16(read_bios_table_lookup(scratch2_uint,i_rm))) : (REGS_BASE + (i_w ? 2 * i_rm : 2 * i_rm + i_rm / 4 & 7)), op_from_addr = (REGS_BASE + (i_w ? 2 * i_reg : 2 * i_reg + i_reg / 4 & 7)), i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint),
+                                        scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16L * read_regs16(seg_override_en ? seg_override : read_bios_table_lookup(scratch2_uint + 3,i_rm)) + (unsigned short)(read_regs16(read_bios_table_lookup(scratch2_uint + 1,i_rm)) + read_bios_table_lookup(scratch2_uint + 2,i_rm) * i_data1+ read_regs16(read_bios_table_lookup(scratch2_uint,i_rm))) : (REGS_BASE + (i_w ? 2 * i_rm : (2 * i_rm + i_rm / 4) & 7)), op_from_addr = (REGS_BASE + (i_w ? 2 * i_reg : (2 * i_reg + i_reg / 4) & 7)), i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint),
 					//(i_w ? op_dest = *(unsigned short*)&mem[op_to_addr], op_result = *(unsigned short*)&mem[op_to_addr] = (op_source = *(unsigned short*)&mem[op_from_addr]) : (op_dest = mem[op_to_addr], op_result = mem[op_to_addr] = (op_source = *(unsigned char*)&mem[op_from_addr])));
                                         (i_w ? op_dest = read_ram16(op_to_addr), write_ram16(op_to_addr, op_source = read_ram16(op_from_addr)), op_result = read_ram16(op_to_addr) : (op_dest = read_ram8(op_to_addr), write_ram8(op_to_addr, op_source = read_ram8(op_from_addr)), op_result = read_ram8(op_to_addr)));
 				else if (!i_d) // LEA
 					seg_override_en = 1,
 					seg_override = REG_ZERO,
 					//scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16 * regs16[seg_override_en ? seg_override : bios_table_lookup[scratch2_uint + 3][i_rm]] + (unsigned short)(regs16[bios_table_lookup[scratch2_uint + 1][i_rm]] + bios_table_lookup[scratch2_uint + 2][i_rm] * i_data1+ regs16[bios_table_lookup[scratch2_uint][i_rm]]) : (REGS_BASE + (i_w ? 2 * i_rm : 2 * i_rm + i_rm / 4 & 7)), op_from_addr = (REGS_BASE + (i_w ? 2 * i_reg : 2 * i_reg + i_reg / 4 & 7)), i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint),
-                                        scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16L * read_regs16(seg_override_en ? seg_override : read_bios_table_lookup(scratch2_uint + 3,i_rm)) + (unsigned short)(read_regs16(read_bios_table_lookup(scratch2_uint + 1,i_rm)) + read_bios_table_lookup(scratch2_uint + 2,i_rm) * i_data1+ read_regs16(read_bios_table_lookup(scratch2_uint,i_rm))) : (REGS_BASE + (i_w ? 2 * i_rm : 2 * i_rm + i_rm / 4 & 7)), op_from_addr = (REGS_BASE + (i_w ? 2 * i_reg : 2 * i_reg + i_reg / 4 & 7)), i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint),
+                                        scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16L * read_regs16(seg_override_en ? seg_override : read_bios_table_lookup(scratch2_uint + 3,i_rm)) + (unsigned short)(read_regs16(read_bios_table_lookup(scratch2_uint + 1,i_rm)) + read_bios_table_lookup(scratch2_uint + 2,i_rm) * i_data1+ read_regs16(read_bios_table_lookup(scratch2_uint,i_rm))) : (REGS_BASE + (i_w ? 2 * i_rm : (2 * i_rm + i_rm / 4) & 7)), op_from_addr = (REGS_BASE + (i_w ? 2 * i_reg : (2 * i_reg + i_reg / 4) & 7)), i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint),
 					//(i_w ? op_dest = *(unsigned short*)&mem[op_from_addr], op_result = *(unsigned short*)&mem[op_from_addr]  = (op_source = *(unsigned short*)& rm_addr) : (op_dest = mem[op_from_addr], op_result = mem[op_from_addr]  = (op_source = *(unsigned char*)& rm_addr)));
                                         (i_w ? op_dest = read_ram16(op_from_addr), write_ram16(op_from_addr, op_source = *(unsigned short*)& rm_addr), op_result = read_ram16(op_from_addr) : (op_dest = read_ram8(op_from_addr), write_ram8(op_from_addr, op_source = *(unsigned char*)& rm_addr), op_result = read_ram8(op_from_addr)));
 				else // POP
 					//(i_w = 1, regs16[REG_SP] += 2, (i_w ? op_dest = *(unsigned short*)&mem[rm_addr], op_result = *(unsigned short*)&mem[rm_addr] = (op_source = *(unsigned short*)&mem[16 * regs16[REG_SS] + (unsigned short)(-2+ regs16[REG_SP])]) : (op_dest = mem[rm_addr], op_result = mem[rm_addr] = (op_source = *(unsigned char*)&mem[16 * regs16[REG_SS] + (unsigned short)(-2+ regs16[REG_SP])]))))
-                                        (write_regs16(REG_SP,read_regs16(REG_SP)+2), (op_dest = read_ram16(rm_addr), write_ram16(rm_addr, op_source = read_ram16(16L * read_regs16(REG_SS) + (unsigned short)(-2+ read_regs16(REG_SP)))), op_result = read_ram16(rm_addr) ))
-			;break; case 11: // MOV AL/AX, [loc]
+                                        (write_regs16(REG_SP,read_regs16(REG_SP)+2), (op_dest = read_ram16(rm_addr), write_ram16(rm_addr, op_source = read_ram16(16L * read_regs16(REG_SS) + (unsigned short)(-2+ read_regs16(REG_SP)))), op_result = read_ram16(rm_addr) ));
+			 break; case 11: // MOV AL/AX, [loc]
 				i_mod = i_reg = 0;
 				i_rm = 6;
 				i_data1 = i_data0;
 				//scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16 * regs16[seg_override_en ? seg_override : bios_table_lookup[scratch2_uint + 3][i_rm]] + (unsigned short)(regs16[bios_table_lookup[scratch2_uint + 1][i_rm]] + bios_table_lookup[scratch2_uint + 2][i_rm] * i_data1+ regs16[bios_table_lookup[scratch2_uint][i_rm]]) : (REGS_BASE + (i_w ? 2 * i_rm : 2 * i_rm + i_rm / 4 & 7)), op_from_addr = (REGS_BASE + (i_w ? 2 * i_reg : 2 * i_reg + i_reg / 4 & 7)), i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint);
-                                scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16L * read_regs16(seg_override_en ? seg_override : read_bios_table_lookup(scratch2_uint + 3,i_rm)) + (unsigned short)(read_regs16(read_bios_table_lookup(scratch2_uint + 1,i_rm)) + read_bios_table_lookup(scratch2_uint + 2,i_rm) * i_data1+ read_regs16(read_bios_table_lookup(scratch2_uint,i_rm))) : (REGS_BASE + (i_w ? 2 * i_rm : 2 * i_rm + i_rm / 4 & 7)), op_from_addr = (REGS_BASE + (i_w ? 2 * i_reg : 2 * i_reg + i_reg / 4 & 7)), i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint);
+                                scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16L * read_regs16(seg_override_en ? seg_override : read_bios_table_lookup(scratch2_uint + 3,i_rm)) + (unsigned short)(read_regs16(read_bios_table_lookup(scratch2_uint + 1,i_rm)) + read_bios_table_lookup(scratch2_uint + 2,i_rm) * i_data1+ read_regs16(read_bios_table_lookup(scratch2_uint,i_rm))) : (REGS_BASE + (i_w ? 2 * i_rm : (2 * i_rm + i_rm / 4) & 7)), op_from_addr = (REGS_BASE + (i_w ? 2 * i_reg : (2 * i_reg + i_reg / 4) & 7)), i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint);
 				//(i_w ? op_dest = *(unsigned short*)&mem[op_from_addr], op_result = *(unsigned short*)&mem[op_from_addr]  = (op_source = *(unsigned short*)&mem[ op_to_addr]) : (op_dest = mem[op_from_addr], op_result = mem[op_from_addr]  = (op_source = *(unsigned char*)&mem[ op_to_addr])))
                                 (i_w ? op_dest = read_ram16(op_from_addr), write_ram16(op_from_addr, op_source = read_ram16( op_to_addr)), op_result = read_ram16(op_from_addr) : (op_dest = read_ram8(op_from_addr), write_ram8(op_from_addr, op_source = read_ram8( op_to_addr)), op_result = read_ram8(op_from_addr)))
 			;break; case 12: // ROL|ROR|RCL|RCR|SHL|SHR|???|SAR reg/mem, 1/CL/imm (80186)
@@ -653,7 +653,7 @@ if(inst_counter==973875){
 					;break; case 5: // SHR
 						set_OF((1 & (i_w ? *(short*)&op_dest : op_dest) >> (8*(i_w + 1) - 1)))
 					;break; case 7: // SAR
-						scratch_uint < 8*(i_w + 1) || set_CF(scratch2_uint);
+						(void)(scratch_uint < 8*(i_w + 1) || set_CF(scratch2_uint));
 						set_OF(0);
 						//(i_w ? op_dest = *(unsigned short*)&mem[rm_addr], op_result = *(unsigned short*)&mem[rm_addr]  += (op_source = *(unsigned short*)& scratch2_uint *= ~(((1 << 8*(i_w + 1)) - 1) >> scratch_uint)) : (op_dest = mem[rm_addr], op_result = mem[rm_addr]  += (op_source = *(unsigned char*)& scratch2_uint *= ~(((1 << 8*(i_w + 1)) - 1) >> scratch_uint))));
                                                 (i_w ? op_dest = read_ram16(rm_addr), write_ram16( rm_addr, op_dest  + (op_source = *(unsigned short*)& scratch2_uint *= ~(((1 << 8*(i_w + 1)) - 1) >> scratch_uint))), op_result = read_ram16( rm_addr ) : (op_dest = read_ram8(rm_addr), write_ram8(rm_addr, op_dest + (op_source = *(unsigned char*)& scratch2_uint *= ~(((1 << 8*(i_w + 1)) - 1) >> scratch_uint))), op_result = read_ram8(rm_addr)));
@@ -696,7 +696,7 @@ if(inst_counter==973875){
 			;break; case 16: // XCHG AX, regs16
 				i_w = 1;
 				op_to_addr = REGS_BASE;
-				op_from_addr = (REGS_BASE + (i_w ? 2 * i_reg4bit : 2 * i_reg4bit + i_reg4bit / 4 & 7));
+				op_from_addr = REGS_BASE + 2 * i_reg4bit;
 			; case 24: // NOP|XCHG reg, r/m
 				if (op_to_addr != op_from_addr)
 					//(i_w ? op_dest = *(unsigned short*)&mem[op_to_addr], op_result = *(unsigned short*)&mem[op_to_addr] ^= (op_source = *(unsigned short*)&mem[op_from_addr]) : (op_dest = mem[op_to_addr], op_result = mem[op_to_addr] ^= (op_source = *(unsigned char*)&mem[op_from_addr]))),
@@ -704,8 +704,8 @@ if(inst_counter==973875){
 					//(i_w ? op_dest = *(unsigned short*)&mem[op_from_addr], op_result = *(unsigned short*)&mem[op_from_addr]  ^= (op_source = *(unsigned short*)&mem[ op_to_addr]) : (op_dest = mem[op_from_addr], op_result = mem[op_from_addr]  ^= (op_source = *(unsigned char*)&mem[ op_to_addr]))),
                                         (i_w ? op_dest = read_ram16(op_from_addr), write_ram16( op_from_addr, op_dest ^ (op_source = read_ram16( op_to_addr))), op_result = read_ram16( op_from_addr) : (op_dest = read_ram8(op_from_addr), write_ram8( op_from_addr, op_dest  ^ (op_source = read_ram8( op_to_addr))), op_result = read_ram8( op_from_addr ))),
 					//(i_w ? op_dest = *(unsigned short*)&mem[op_to_addr], op_result = *(unsigned short*)&mem[op_to_addr] ^= (op_source = *(unsigned short*)&mem[op_from_addr]) : (op_dest = mem[op_to_addr], op_result = mem[op_to_addr] ^= (op_source = *(unsigned char*)&mem[op_from_addr])))
-                                        (i_w ? op_dest = read_ram16(op_to_addr), write_ram16( op_to_addr, op_dest ^ (op_source = read_ram16(op_from_addr))), op_result = read_ram16( op_to_addr ) : (op_dest = read_ram8(op_to_addr), write_ram8( op_to_addr, op_dest ^ (op_source = read_ram8(op_from_addr))), op_result = read_ram8( op_to_addr )))
-			;break; case 17: // MOVSx (extra=0)|STOSx (extra=1)|LODSx (extra=2)
+                                        (i_w ? op_dest = read_ram16(op_to_addr), write_ram16( op_to_addr, op_dest ^ (op_source = read_ram16(op_from_addr))), op_result = read_ram16( op_to_addr ) : (op_dest = read_ram8(op_to_addr), write_ram8( op_to_addr, op_dest ^ (op_source = read_ram8(op_from_addr))), op_result = read_ram8( op_to_addr )));
+			 break; case 17: // MOVSx (extra=0)|STOSx (extra=1)|LODSx (extra=2)
 				scratch2_uint = seg_override_en ? seg_override : REG_DS;
 
 				//for (scratch_uint = rep_override_en ? regs16[REG_CX] : 1; scratch_uint; scratch_uint--)
@@ -721,14 +721,14 @@ if(inst_counter==973875){
 
 				if (rep_override_en)
 					//regs16[REG_CX] = 0
-                                        write_regs16( REG_CX, 0 )
-			;break; case 18: // CMPSx (extra=0)|SCASx (extra=1)
+                                        write_regs16( REG_CX, 0 );
+			 break; case 18: // CMPSx (extra=0)|SCASx (extra=1)
 				scratch2_uint = seg_override_en ? seg_override : REG_DS;
 
 				//if ((scratch_uint = rep_override_en ? regs16[REG_CX] : 1))
                                 if ((scratch_uint = rep_override_en ? read_regs16(REG_CX) : 1))
 				{
-					for (; scratch_uint; rep_override_en || scratch_uint--)
+					for (; scratch_uint; (void)(rep_override_en || scratch_uint--))
 					{
 						//(i_w ? op_dest = *(unsigned short*)&mem[extra ? REGS_BASE : 16 * regs16[scratch2_uint] + (unsigned short)( regs16[ REG_SI])], op_result = *(unsigned short*)&mem[extra ? REGS_BASE : 16 * regs16[scratch2_uint] + (unsigned short)( regs16[ REG_SI])]  - (op_source = *(unsigned short*)&mem[ 16 * regs16[REG_ES] + (unsigned short)( regs16[ REG_DI])]) : (op_dest = mem[extra ? REGS_BASE : 16 * regs16[scratch2_uint] + (unsigned short)( regs16[ REG_SI])], op_result = mem[extra ? REGS_BASE : 16 * regs16[scratch2_uint] + (unsigned short)( regs16[ REG_SI])]  - (op_source = *(unsigned char*)&mem[ 16 * regs16[REG_ES] + (unsigned short)( regs16[ REG_DI])]))),
                                                 (i_w ? op_dest = read_ram16(extra ? REGS_BASE : 16L * read_regs16(scratch2_uint) + (unsigned short)( read_regs16( REG_SI))), op_result = read_ram16(extra ? REGS_BASE : 16L * read_regs16(scratch2_uint) + (unsigned short)( read_regs16( REG_SI)))  - (op_source = read_ram16( 16L * read_regs16(REG_ES) + (unsigned short)( read_regs16( REG_DI)))) : (op_dest = read_ram8(extra ? REGS_BASE : 16L * read_regs16(scratch2_uint) + (unsigned short)( read_regs16( REG_SI))), op_result = read_ram8(extra ? REGS_BASE : 16L * read_regs16(scratch2_uint) + (unsigned short)( read_regs16( REG_SI)))  - (op_source = read_ram8( 16L * read_regs16(REG_ES) + (unsigned short)( read_regs16( REG_DI)))))),
@@ -753,8 +753,8 @@ if(inst_counter==973875){
                                         set_flags((i_w = 1, write_regs16( REG_SP, read_regs16( REG_SP ) + 2 ), (op_dest = *(unsigned short*)&scratch_uint, op_result = *(unsigned short*)&scratch_uint = (op_source = read_ram16(16L * read_regs16(REG_SS) + (unsigned short)(-2+ read_regs16(REG_SP)))) )));
 				else if (!i_d) // RET|RETF imm16
 					//regs16[REG_SP] += i_data0
-                                        write_regs16( REG_SP, read_regs16( REG_SP ) + i_data0 )
-			;break; case 20: // MOV r/m, immed
+                                        write_regs16( REG_SP, read_regs16( REG_SP ) + i_data0 );
+			 break; case 20: // MOV r/m, immed
 				//(i_w ? op_dest = *(unsigned short*)&mem[op_from_addr], op_result = *(unsigned short*)&mem[op_from_addr]  = (op_source = *(unsigned short*)& i_data2) : (op_dest = mem[op_from_addr], op_result = mem[op_from_addr]  = (op_source = *(unsigned char*)& i_data2)))
                                 (i_w ? op_dest = read_ram16(op_from_addr), write_ram16( op_from_addr, op_source = *(unsigned short*)& i_data2), op_result = read_ram16( op_from_addr ) : (op_dest = read_ram8(op_from_addr), write_ram8(op_from_addr, op_source = *(unsigned char*)& i_data2), op_result = read_ram8( op_from_addr )))
 			;break; case 21: // IN AL/AX, DX/imm8
@@ -783,24 +783,24 @@ if(inst_counter==973875){
 				//(i_w ? op_dest = *(unsigned short*)&io_ports[scratch_uint], op_result = *(unsigned short*)&io_ports[scratch_uint]  = (op_source = *(unsigned short*)& regs8[REG_AL]) : (op_dest = io_ports[scratch_uint], op_result = io_ports[scratch_uint]  = (op_source = *(unsigned char*)& regs8[REG_AL])));
                                 (i_w ? op_dest = read_io_ports16(scratch_uint), write_io_ports16( scratch_uint, op_source = read_regs16(REG_AL)), op_result = read_io_ports16( scratch_uint ) : (op_dest = read_io_ports8(scratch_uint), write_io_ports8(scratch_uint, op_source = read_regs8(REG_AL)), op_result = read_io_ports8( scratch_uint )));
 				//scratch_uint == 0x61 && (io_hi_lo = 0, spkr_en |= regs8[REG_AL] & 3); // Speaker control
-                                scratch_uint == 0x61 && (io_hi_lo = 0, spkr_en |= read_regs8(REG_AL) & 3); // Speaker control
+                                (void)(scratch_uint == 0x61 && (io_hi_lo = 0, spkr_en |= read_regs8(REG_AL) & 3)); // Speaker control
 				//(scratch_uint == 0x40 || scratch_uint == 0x42) && (io_ports[0x43] & 6) && (mem[0x469 + scratch_uint - (io_hi_lo ^= 1)] = regs8[REG_AL]); // PIT rate programming
-                                (scratch_uint == 0x40 || scratch_uint == 0x42) && (read_io_ports8(0x43) & 6) && (write_ram8(0x469 + scratch_uint - (io_hi_lo ^= 1), read_regs8(REG_AL)),read_ram8(0x469 + scratch_uint - (io_hi_lo))); // PIT rate programming
+                                (void)((scratch_uint == 0x40 || scratch_uint == 0x42) && (read_io_ports8(0x43) & 6) && (write_ram8(0x469 + scratch_uint - (io_hi_lo ^= 1), read_regs8(REG_AL)),read_ram8(0x469 + scratch_uint - (io_hi_lo)))); // PIT rate programming
 #if 0
 				scratch_uint == 0x43 && (io_hi_lo = 0, regs8[REG_AL] >> 6 == 2) && (SDL_PauseAudio((regs8[REG_AL] & 0xF7) != 0xB6), 0); // Speaker enable
 #endif
 				//scratch_uint == 0x3D5 && (io_ports[0x3D4] >> 1 == 6) && (mem[0x4AD + !(io_ports[0x3D4] & 1)] = regs8[REG_AL]); // CRT video RAM start offset
-                                scratch_uint == 0x3D5 && (read_io_ports8(0x3D4) >> 1 == 6) && (write_ram8(0x4AD + !(read_io_ports8(0x3D4) & 1), read_regs8(REG_AL)),read_ram8(0x4AD + !(read_io_ports8(0x3D4) & 1))); // CRT video RAM start offset
+                                (void)(scratch_uint == 0x3D5 && (read_io_ports8(0x3D4) >> 1 == 6) && (write_ram8(0x4AD + !(read_io_ports8(0x3D4) & 1), read_regs8(REG_AL)), read_ram8(0x4AD + !(read_io_ports8(0x3D4) & 1)))); // CRT video RAM start offset
 				//scratch_uint == 0x3D5 && (io_ports[0x3D4] >> 1 == 7) && (scratch2_uint = ((mem[0x49E]*80 + mem[0x49D] + *(short*)&mem[0x4AD]) & (io_ports[0x3D4] & 1 ? 0xFF00 : 0xFF)) + (regs8[REG_AL] << (io_ports[0x3D4] & 1 ? 0 : 8)) - *(short*)&mem[0x4AD], mem[0x49D] = scratch2_uint % 80, mem[0x49E] = scratch2_uint / 80); // CRT cursor position
                                 scratch_uint == 0x3D5 && (read_io_ports8(0x3D4) >> 1 == 7) && (scratch2_uint = ((read_ram8(0x49E)*80 + read_ram8(0x49D) + read_ram16(0x4AD)) & (read_io_ports8(0x3D4) & 1 ? 0xFF00 : 0xFF)) + (read_regs8(REG_AL) << (read_io_ports8(0x3D4) & 1 ? 0 : 8)) - read_ram16(0x4AD), write_ram8(0x49D, scratch2_uint % 80), write_ram8(0x49E, scratch2_uint / 80), 0); // CRT cursor position
 				//scratch_uint == 0x3B5 && io_ports[0x3B4] == 1 && (GRAPHICS_X = regs8[REG_AL] * 16); // Hercules resolution reprogramming. Defaults are set in the BIOS
-                                scratch_uint == 0x3B5 && read_io_ports8(0x3B4) == 1 && (GRAPHICS_X = read_regs8(REG_AL) * 16); // Hercules resolution reprogramming. Defaults are set in the BIOS
+                                (void)(scratch_uint == 0x3B5 && read_io_ports8(0x3B4) == 1 && (GRAPHICS_X = read_regs8(REG_AL) * 16)); // Hercules resolution reprogramming. Defaults are set in the BIOS
 				//scratch_uint == 0x3B5 && io_ports[0x3B4] == 6 && (GRAPHICS_Y = regs8[REG_AL] * 4);
-                                scratch_uint == 0x3B5 && read_io_ports8(0x3B4) == 6 && (GRAPHICS_Y = read_regs8(REG_AL) * 4);
+                                (void)(scratch_uint == 0x3B5 && read_io_ports8(0x3B4) == 6 && (GRAPHICS_Y = read_regs8(REG_AL) * 4));
 			;break; case 23: // REPxx
 				rep_override_en = 2;
 				rep_mode = i_w;
-				seg_override_en && seg_override_en++
+				(void)(seg_override_en && seg_override_en++)
 			;break; case 25: // PUSH reg
 				//(i_w = 1, (i_w ? op_dest = *(unsigned short*)&mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])], op_result = *(unsigned short*)&mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])] = (op_source = *(unsigned short*)&regs16[extra]) : (op_dest = mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])], op_result = mem[16 * regs16[REG_SS] + (unsigned short)(-- regs16[REG_SP])] = (op_source = *(unsigned char*)&regs16[extra]))))
                                 (i_w = 1, (write_regs16( REG_SP, read_regs16( REG_SP ) - 1 ), op_dest = read_ram16(16L * read_regs16(REG_SS) + (unsigned short)(read_regs16(REG_SP))), write_regs16( REG_SP, read_regs16( REG_SP ) - 1 ), write_ram16(op_result = 16L * read_regs16(REG_SS) + (unsigned short)(read_regs16(REG_SP)),op_source = read_regs16(extra)), op_result = read_ram16( op_result ) ))
@@ -810,11 +810,11 @@ if(inst_counter==973875){
 			;break; case 27: // xS: segment overrides
 				seg_override_en = 2;
 				seg_override = extra;
-				rep_override_en && rep_override_en++
+				(void)(rep_override_en && rep_override_en++)
 			;break; case 28: // DAA/DAS
 				i_w = 0;
 				//extra ? set_AF((((scratch2_uint = regs8[REG_AL]) & 0x0F) > 9) || regs8[FLAG_AF]) && (op_result = regs8[REG_AL] -= 6, set_CF(regs8[FLAG_CF] || (regs8[REG_AL]  >= scratch2_uint))), set_CF(((( 0xFF & 1 ? scratch2_uint : regs8[REG_AL]) &  0xFF) >  0x99) || regs8[FLAG_CF]) && (op_result = regs8[REG_AL] -= 0x60) : set_AF((((scratch2_uint = regs8[REG_AL]) & 0x0F) > 9) || regs8[FLAG_AF]) && (op_result = regs8[REG_AL] += 6, set_CF(regs8[FLAG_CF] || (regs8[REG_AL]  < scratch2_uint))), set_CF(((( 0xF0 & 1 ? scratch2_uint : regs8[REG_AL]) &  0xF0) >  0x90) || regs8[FLAG_CF]) && (op_result = regs8[REG_AL] += 0x60) // extra = 0 for DAA, 1 for DAS
-                                extra ? set_AF((((scratch2_uint = read_regs8(REG_AL)) & 0x0F) > 9) || read_regs8(FLAG_AF)) && (write_regs8(REG_AL, read_regs8(REG_AL) - 6), op_result = read_regs8(REG_AL), set_CF(read_regs8(FLAG_CF) || (read_regs8(REG_AL)  >= scratch2_uint))), set_CF((( scratch2_uint &  0xFF) >  0x99) || read_regs8(FLAG_CF)) && (write_regs8( REG_AL, read_regs8(REG_AL) - 0x60), op_result = read_regs8(REG_AL)) : set_AF((((scratch2_uint = read_regs8(REG_AL)) & 0x0F) > 9) || read_regs8(FLAG_AF)) && (write_regs8(REG_AL, read_regs8(REG_AL) + 6), op_result = read_regs8(REG_AL), set_CF(read_regs8(FLAG_CF) || (read_regs8(REG_AL)  < scratch2_uint))), set_CF(((read_regs8(REG_AL) &  0xF0) >  0x90) || read_regs8(FLAG_CF)) && (write_regs8(REG_AL, read_regs8(REG_AL) + 0x60), op_result = read_regs8(REG_AL)) // extra = 0 for DAA, 1 for DAS
+                                extra ? (void)(set_AF((((scratch2_uint = read_regs8(REG_AL)) & 0x0F) > 9) || read_regs8(FLAG_AF)) && (write_regs8(REG_AL, read_regs8(REG_AL) - 6), op_result = read_regs8(REG_AL), set_CF(read_regs8(FLAG_CF) || (read_regs8(REG_AL)  >= scratch2_uint)))), set_CF((( scratch2_uint &  0xFF) >  0x99) || read_regs8(FLAG_CF)) && (write_regs8( REG_AL, read_regs8(REG_AL) - 0x60), op_result = read_regs8(REG_AL)) : set_AF((((scratch2_uint = read_regs8(REG_AL)) & 0x0F) > 9) || read_regs8(FLAG_AF)) && (write_regs8(REG_AL, read_regs8(REG_AL) + 6), op_result = read_regs8(REG_AL), set_CF(read_regs8(FLAG_CF) || (read_regs8(REG_AL)  < scratch2_uint))), set_CF(((read_regs8(REG_AL) &  0xF0) >  0x90) || read_regs8(FLAG_CF)) && (write_regs8(REG_AL, read_regs8(REG_AL) + 0x60), op_result = read_regs8(REG_AL)) // extra = 0 for DAA, 1 for DAS
 			;break; case 29: // AAA/AAS
 				op_result = AAA_AAS(extra - 1)
 			;break; case 30: // CBW
@@ -849,7 +849,7 @@ if(inst_counter==973875){
 			;break; case 37: // LES|LDS reg, r/m
 				i_w = i_d = 1;
 				//scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16 * regs16[seg_override_en ? seg_override : bios_table_lookup[scratch2_uint + 3][i_rm]] + (unsigned short)(regs16[bios_table_lookup[scratch2_uint + 1][i_rm]] + bios_table_lookup[scratch2_uint + 2][i_rm] * i_data1+ regs16[bios_table_lookup[scratch2_uint][i_rm]]) : (REGS_BASE + (i_w ? 2 * i_rm : 2 * i_rm + i_rm / 4 & 7)), op_from_addr = (REGS_BASE + (i_w ? 2 * i_reg : 2 * i_reg + i_reg / 4 & 7)), i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint);
-                                scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16L * read_regs16(seg_override_en ? seg_override : read_bios_table_lookup(scratch2_uint + 3,i_rm)) + (unsigned short)(read_regs16(read_bios_table_lookup(scratch2_uint + 1,i_rm)) + read_bios_table_lookup(scratch2_uint + 2,i_rm) * i_data1+ read_regs16(read_bios_table_lookup(scratch2_uint,i_rm))) : (REGS_BASE + ( 2 * i_rm )), op_from_addr = (REGS_BASE + ( 2 * i_reg )), i_d && (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint);
+                                scratch2_uint = 4 * !i_mod, op_to_addr = rm_addr = i_mod < 3 ? 16L * read_regs16(seg_override_en ? seg_override : read_bios_table_lookup(scratch2_uint + 3,i_rm)) + (unsigned short)(read_regs16(read_bios_table_lookup(scratch2_uint + 1,i_rm)) + read_bios_table_lookup(scratch2_uint + 2,i_rm) * i_data1+ read_regs16(read_bios_table_lookup(scratch2_uint,i_rm))) : (REGS_BASE + ( 2 * i_rm )), op_from_addr = (REGS_BASE + ( 2 * i_reg )), (scratch_uint = op_from_addr, op_from_addr = rm_addr, op_to_addr = scratch_uint);
 				//(i_w ? op_dest = *(unsigned short*)&mem[op_to_addr], op_result = *(unsigned short*)&mem[op_to_addr] = (op_source = *(unsigned short*)&mem[op_from_addr]) : (op_dest = mem[op_to_addr], op_result = mem[op_to_addr] = (op_source = *(unsigned char*)&mem[op_from_addr])));
                                 (op_dest = read_ram16(op_to_addr), write_ram16( op_to_addr, op_source = read_ram16(op_from_addr)), op_result = read_ram16( op_to_addr ) );
 				//(i_w ? op_dest = *(unsigned short*)&mem[REGS_BASE + extra], op_result = *(unsigned short*)&mem[REGS_BASE + extra]  = (op_source = *(unsigned short*)&mem[ rm_addr + 2]) : (op_dest = mem[REGS_BASE + extra], op_result = mem[REGS_BASE + extra]  = (op_source = *(unsigned char*)&mem[ rm_addr + 2])))
@@ -863,7 +863,7 @@ if(inst_counter==973875){
 			;break; case 40: // INTO
 				++reg_ip;
 				//regs8[FLAG_OF] && pc_interrupt(4)
-                                read_regs8(FLAG_OF) && pc_interrupt(4)
+                                (void)(read_regs8(FLAG_OF) && pc_interrupt(4))
 			;break; case 41: // AAM
 				if (i_data0 &= 0xFF)
 					//regs8[REG_AH] = regs8[REG_AL] / i_data0,
@@ -871,11 +871,11 @@ if(inst_counter==973875){
 					//op_result = regs8[REG_AL] %= i_data0;
                                         write_regs8(REG_AL, read_regs8(REG_AL) % i_data0), op_result = read_regs8(REG_AL);
 				else // Divide by zero
-					pc_interrupt(0)
-			;break; case 42: // AAD
+					pc_interrupt(0);
+			 break; case 42: // AAD
 				i_w = 0;
 				//regs16[REG_AX] = op_result = 0xFF & regs8[REG_AL] + i_data0 * regs8[REG_AH]
-                                write_regs16(REG_AX, op_result = 0xFF & read_regs8(REG_AL) + i_data0 * read_regs8(REG_AH))
+                                write_regs16(REG_AX, op_result = 0xFF & (read_regs8(REG_AL) + i_data0 * read_regs8(REG_AH)))
 			;break; case 43: // SALC
 				//regs8[REG_AL] = -regs8[FLAG_CF]
                                 write_regs8(REG_AL, -read_regs8(FLAG_CF))
