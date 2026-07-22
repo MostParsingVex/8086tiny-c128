@@ -21,7 +21,7 @@ int main(){
   puts("loading fd.img");
   fp = fopen( "fd.img", "rb" );
   for( uint32_t i = 0; i < 1474560; i++ ) {
-    if( (i & 0x3ff) == 0 ) printf( "%ld\n", i );
+    if( (i & 0x3ff) == 0 ) printf( "%ld\n", (long)i );
     fread( &val, 1, 1, fp );
     write_disk( 0, i, val );
   }
