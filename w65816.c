@@ -82,7 +82,7 @@ uint8_t read_bios_table_lookup( uint8_t i, uint8_t j ) {
 uint8_t tod_hack[4];
 
 void getrtc(){
-#if 0
+#if 1
   volatile uint8_t temp;
   temp = *CIA1_TOD_3;
   temp = (temp & 0xf) + (temp & 0x10)/8*5 + (temp & 0x80)/32*3;
@@ -144,7 +144,8 @@ int write_console( uint8_t *buffer ) {
 }
 
 void ram_init(){
-#if 0
+  *CIA1_TOD_0 = 0;
+#if 1
   volatile uint8_t temp;
   temp = *CIA1_TOD_3;
   temp = (temp & 0xf) + (temp & 0x10)/8*5 + (temp & 0x80)/32*3;
