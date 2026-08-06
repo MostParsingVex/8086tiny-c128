@@ -29,7 +29,7 @@ If your business needs (!!) require a faster x86 emulation solution on your
 * Simple command line applications that only use text mode and don't make too many crazy demands on
 cursor positioning should be usable.
 
-### Things that fully don't work
+### Things that don't fully work
 * real time clock
 * many keys on the keyboard (e.g. CTRL-ALT-DELETE doesn't work)
 * hard drive
