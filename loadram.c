@@ -17,7 +17,7 @@ int main(){
     write_ram8( 0xf0100L + i, val );
   }  
   fclose( fp );
-#if 1
+#if 0
   puts("loading fd.img");
   fp = fopen( "fd.img", "rb" );
   for( uint32_t i = 0; i < 1474560; i++ ) {
