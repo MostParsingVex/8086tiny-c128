@@ -36,7 +36,7 @@ cursor positioning should be usable.
 * graphics modes
 * characters such as underscores and curly braces
 * speaker or other audio device
-* 1571 and 1581 and 1565 and FD2000/4000 MFM disk support
+* 1571 and 1581 and FD2000/4000 MFM disk support
 * mouse
 * serial port
 * parallel port
