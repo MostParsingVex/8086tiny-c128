@@ -29,7 +29,7 @@ If your business needs (!!) require a faster x86 emulation solution on your
 * Simple command line applications that only use text mode and don't make too many crazy demands on
 cursor positioning should be usable.
 
-### Things that don't work
+### Things that don't fully work
 * real time clock
 * many keys on the keyboard (e.g. CTRL-ALT-DELETE doesn't work)
 * hard drive
@@ -38,6 +38,9 @@ cursor positioning should be usable.
 * speaker or other audio device
 * 1571 and 1581 and FD2000/4000 MFM disk support
 * mouse
+* serial port
+* parallel port
+* ethernet
 * lots of other things (welcome to open an issue if you don't believe it is mentioned)
 
 ### To build
