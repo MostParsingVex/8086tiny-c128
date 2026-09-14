@@ -1,5 +1,7 @@
 #include "reu.h"
 
+#include<cbmh.>
+
 #define RAM_START 0x000000L
 #define BIOS_START 0xf0000L
 #define IO_START 0x110000L
@@ -258,12 +260,29 @@ for(int i = 0;i<40;i++)
 printf("%02x ", read_ram8( 16 * read_regs16(REG_ES) + (unsigned short)( read_regs16( REG_BX)) + i));
 puts("");
 #endif
+
+  // attempt to initialize drive A (maybe this needs to be done elsewhere)
+  // assume drive A is device 8
+  cbm_k_setlfs( 2, 8, 2 );
+  cbm_k_setnam( "#" );
+  cbm_k_open( );
+  cbm_k_setlfs( 15, 8, 15 );
+  uint8_t burst_command[15] = "U0";
+  // inquire disk
+  burst_command[2] = 0x04;
+  cbm_k_setnam( burst_command );
+  cbm_k_chkin( 2 );
 }
 
+uint8_t diskbuffer[ 512 ];
+
+// assume drive A is device 8
 uint8_t read_disk( int whichdisk, uint32_t addr ) {
+
   return read_ram8( DISKA_START + addr );
 }
 
+// assume drive A is device 8
 int write_disk( int whichdisk, uint32_t addr, uint8_t val ) {
   write_ram8( DISKA_START + addr, val );
   return 0; 
