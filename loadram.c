@@ -1,14 +1,14 @@
 #include<stdio.h>
-#include"reu.h"
+//#include"reu.h"
 
 int main(){
   ram_init();
-
+#if 0
   puts("clear ram");
   for( uint32_t i = 0; i < 0x120000L; i+=2 ) {
     write_ram16( i, 0 );
   }
-
+#endif
   puts("loading bios");
   FILE *fp = fopen( "bios", "rb" );
   uint8_t val;
