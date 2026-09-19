@@ -144,39 +144,6 @@ int32_t op_result, disk[3], scratch_int;
 //time_t clock_buf;
 //struct timeb ms_clock;
 
-void ram_init();
-uint8_t read_ram8( uint32_t addr );
-
-void write_ram8( uint32_t addr, uint8_t val );
-
-// reads from 0xffff will have incorrect high byte
-uint16_t read_ram16( uint32_t addr );
-
-// write to 0xffff will have incorrect high byte,
-void write_ram16( uint32_t addr, uint16_t val );
-
-uint8_t read_io_ports8( uint16_t addr );
-
-void write_io_ports8( uint16_t addr, uint8_t val );
-
-uint16_t read_io_ports16( uint16_t addr );
-
-void write_io_ports16( uint16_t addr, uint16_t val );
-
-uint8_t read_regs8( uint32_t addr );
-
-void write_regs8( uint8_t addr, uint8_t val );
-
-uint16_t read_regs16( uint32_t addr );
-
-void write_regs16( uint32_t addr, uint16_t val );
-
-uint8_t read_bios_table_lookup( uint8_t i, uint8_t j );
-
-uint8_t read_disk( int whichdisk, uint32_t addr );
-
-int write_disk( int whichdisk, uint32_t addr, uint8_t val );
-
 #if 0
 SDL_AudioSpec sdl_audio = {44100, AUDIO_U8, 1, 0, 128};
 SDL_Surface *sdl_screen;
